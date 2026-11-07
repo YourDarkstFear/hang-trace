@@ -186,4 +186,4 @@ npm run build
 
 ## License
 
-[MIT](LICENSE) © 2026 hang-trace contributors
+[MIT](LICENSE) (c) 2026 hang-trace contributors

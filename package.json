@@ -1,6 +1,6 @@
 {
   "name": "hang-trace",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Zero-dependency utility to detect hanging/dangling Promises during development with exact caller file and line numbers.",
   "keywords": [
     "promise",

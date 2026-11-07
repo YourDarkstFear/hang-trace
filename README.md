@@ -6,6 +6,10 @@
 [![license](https://img.shields.io/npm/l/hang-trace.svg)](LICENSE)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/hang-trace)](https://bundlephobia.com/package/hang-trace)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/YourDarkstFear/hang-trace/main/demo.gif" alt="hang-trace terminal demo" width="800" />
+</p>
+
 ---
 
 ## The Problem: Silent Hangs & Infinite Spinners

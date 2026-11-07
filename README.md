@@ -1,4 +1,4 @@
-# hang-trace ⏱️🔍
+# hang-trace
 
 > Catch hanging, dangling Promises during development with exact caller file and line numbers. Zero runtime dependencies. Zero production cost.
 
@@ -13,7 +13,7 @@
 Have you ever encountered a UI screen stuck on an **infinite loading skeleton**, a script hanging indefinitely in CI, or a backend request that never times out and prints **no console error**?
 
 ```ts
-// ❌ If an upstream callback is dropped or an event never fires,
+// If an upstream callback is dropped or an event never fires,
 // this Promise neither resolves nor rejects. Silent freeze!
 const response = await new Promise((resolve) => {
   eventEmitter.once('data', resolve); // Listener never triggers!
@@ -39,18 +39,18 @@ Stack trace:
 
 ---
 
-## ✨ Features
+## Features
 
-- 🪶 **Zero Runtime Dependencies:** Completely self-contained with no external baggage.
-- ⚡ **Zero Production Cost:** In `process.env.NODE_ENV === 'production'`, it is a pure no-op returning the original Promise directly. Fully tree-shakeable.
-- 📍 **Precise Caller Location:** Accurately extracts the calling file, line, and column across V8 (Node/Chrome/Edge), Firefox, and Safari.
-- 🔄 **Event Loop Friendly:** Calls `timer.unref?.()` in Node.js so diagnostic timers never keep processes alive.
-- 🧹 **Zero Memory Leaks:** Automatically cancels timers the microsecond a promise settles (resolved or rejected).
-- 📦 **Dual ESM & CommonJS:** Native support for both modern ES Modules (`.mjs`) and legacy CommonJS (`.cjs`), with full TypeScript definitions (`.d.ts`).
+- **Zero Runtime Dependencies:** Completely self-contained with no external baggage.
+- **Zero Production Cost:** In `process.env.NODE_ENV === 'production'`, it is a pure no-op returning the original Promise directly. Fully tree-shakeable.
+- **Precise Caller Location:** Accurately extracts the calling file, line, and column across V8 (Node/Chrome/Edge), Firefox, and Safari.
+- **Event Loop Friendly:** Calls `timer.unref?.()` in Node.js so diagnostic timers never keep processes alive.
+- **Zero Memory Leaks:** Automatically cancels timers the microsecond a promise settles (resolved or rejected).
+- **Dual ESM & CommonJS:** Native support for both modern ES Modules (`.mjs`) and legacy CommonJS (`.cjs`), with full TypeScript definitions (`.d.ts`).
 
 ---
 
-## 🚀 Quickstart (1 Minute)
+## Quickstart (1 Minute)
 
 ### Install
 
@@ -93,7 +93,7 @@ await saveUserSettings('user_123', { theme: 'dark' });
 
 ---
 
-## 🛠️ API Reference
+## API Reference
 
 ### `trace<T>(promise: Promise<T>, options?: HangOptions): Promise<T>`
 
@@ -158,7 +158,7 @@ const data = await trace(unreliableCall(), {
 
 ---
 
-## 🔒 Production Safety & Zero Cost
+## Production Safety & Zero Cost
 
 In production builds (`process.env.NODE_ENV === 'production'`) or when `disabled: true`:
 - **Zero timers registered:** `setTimeout` is never called.
@@ -168,7 +168,7 @@ In production builds (`process.env.NODE_ENV === 'production'`) or when `disabled
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run unit tests via Vitest:
 
@@ -184,6 +184,6 @@ npm run build
 
 ---
 
-## 📄 License
+## License
 
 [MIT](LICENSE) © 2026 hang-trace contributors

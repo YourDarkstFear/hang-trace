@@ -169,6 +169,60 @@ describe('hang-trace', () => {
       expect(wrapped).toBe(originalFn);
       expect(vi.getTimerCount()).toBe(0);
     });
+
+    it('forces diagnostics in production when options.force is true', async () => {
+      process.env.NODE_ENV = 'production';
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const hangingPromise = new Promise(() => {});
+      trace(hangingPromise, { timeoutMs: 2000, label: 'forcedProdPromise', force: true });
+
+      expect(vi.getTimerCount()).toBe(1);
+
+      await vi.advanceTimersByTimeAsync(1999);
+      expect(warnSpy).not.toHaveBeenCalled();
+
+      await vi.advanceTimersByTimeAsync(1);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy.mock.calls[0][0]).toContain('forcedProdPromise');
+    });
+
+    it('disabled: true overrides force: true', async () => {
+      process.env.NODE_ENV = 'production';
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const originalPromise = new Promise(() => {});
+      const resultPromise = trace(originalPromise, {
+        timeoutMs: 1000,
+        disabled: true,
+        force: true,
+      });
+
+      expect(resultPromise).toBe(originalPromise);
+      expect(vi.getTimerCount()).toBe(0);
+
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it('forces wrapAsync diagnostics in production when options.force is true', async () => {
+      process.env.NODE_ENV = 'production';
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const hangingFn = wrapAsync(
+        async function forcedProdFn() {
+          return new Promise(() => {});
+        },
+        { timeoutMs: 2000, force: true }
+      );
+
+      hangingFn();
+      expect(vi.getTimerCount()).toBe(1);
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+      expect(warnSpy.mock.calls[0][0]).toContain('forcedProdFn');
+    });
   });
 
   describe('5. Manual disabled toggle', () => {

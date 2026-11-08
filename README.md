@@ -128,6 +128,7 @@ const processOrder = wrapAsync(submitOrder, { label: 'SubmitOrder' });
 | `label` | `string` | `<anonymous>` or function name | Identifier displayed in logs and alerts. |
 | `onHang` | `(info: HangInfo) => void` | `undefined` | Custom alert callback. When provided, replaces `console.warn`. |
 | `disabled` | `boolean` | `false` | When `true`, completely disables tracking and returns the input directly. |
+| `force` | `boolean` | `false` | When `true`, overrides `NODE_ENV === 'production'` and forces diagnostics to run. |
 
 ---
 
@@ -164,7 +165,7 @@ const data = await trace(unreliableCall(), {
 
 ## Production Safety & Zero Cost
 
-In production builds (`process.env.NODE_ENV === 'production'`) or when `disabled: true`:
+In production builds (`process.env.NODE_ENV === 'production'`) unless overridden with `force: true`, or when `disabled: true`:
 - **Zero timers registered:** `setTimeout` is never called.
 - **Zero stack captures:** `Error.captureStackTrace` and `new Error()` are never touched.
 - **Reference equality:** Returns the exact input promise / function instance directly.

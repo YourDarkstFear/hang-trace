@@ -112,7 +112,9 @@ function traceInternal<T>(
  * @returns The monitored Promise.
  */
 export function trace<T>(promise: Promise<T>, options?: HangOptions): Promise<T> {
-  if (options?.disabled || isProduction()) {
+  const isProd = isProduction();
+  const shouldBypass = options?.disabled || (isProd && !options?.force);
+  if (shouldBypass) {
     return promise;
   }
   return traceInternal(promise, options, trace);
@@ -122,7 +124,8 @@ export function trace<T>(promise: Promise<T>, options?: HangOptions): Promise<T>
  * Wraps an async function (or any function returning a Promise) with hang tracking.
  * Each invocation of the returned function will be monitored for hanging promises.
  *
- * In production (`process.env.NODE_ENV === 'production'`), returns the original function directly.
+ * In production (`process.env.NODE_ENV === 'production'`), returns the original function directly,
+ * unless overridden with `force: true`.
  *
  * @param fn The async function to wrap.
  * @param options Optional configuration for timeout, label, and hang callback.
@@ -132,7 +135,9 @@ export function wrapAsync<Args extends unknown[], Return>(
   fn: (...args: Args) => Promise<Return>,
   options?: HangOptions
 ): (...args: Args) => Promise<Return> {
-  if (options?.disabled || isProduction()) {
+  const isProd = isProduction();
+  const shouldBypass = options?.disabled || (isProd && !options?.force);
+  if (shouldBypass) {
     return fn;
   }
 
@@ -143,7 +148,9 @@ export function wrapAsync<Args extends unknown[], Return>(
   };
 
   return function hangTraceWrapper(this: unknown, ...args: Args): Promise<Return> {
-    if (mergedOptions.disabled || isProduction()) {
+    const isProdCall = isProduction();
+    const shouldBypassCall = mergedOptions.disabled || (isProdCall && !mergedOptions.force);
+    if (shouldBypassCall) {
       return fn.apply(this, args);
     }
 

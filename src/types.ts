@@ -51,4 +51,10 @@ export interface HangOptions {
    * @default false
    */
   disabled?: boolean;
+
+  /**
+   * If true, overrides `NODE_ENV === 'production'` and forces hang-trace diagnostics to run.
+   * @default false
+   */
+  force?: boolean;
 }

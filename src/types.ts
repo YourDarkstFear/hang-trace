@@ -53,8 +53,15 @@ export interface HangOptions {
   disabled?: boolean;
 
   /**
-   * If true, overrides `NODE_ENV === 'production'` and forces hang-trace diagnostics to run.
+   * If true, overrides `process.env.NODE_ENV === 'production'` and forces diagnostics to run.
    * @default false
    */
   force?: boolean;
+
+  /**
+   * In Node.js, calls `timer.unref()` so the diagnostic timer does not keep the event loop alive on its own.
+   * Set to `false` for short-lived CLI scripts.
+   * @default true
+   */
+  unref?: boolean;
 }

@@ -4,19 +4,6 @@ import type { HangInfo, HangOptions } from './types.js';
 export type { HangInfo, HangOptions };
 
 /**
- * Checks whether the current runtime environment is production.
- * Supports Node.js, bundlers, and browsers.
- */
-function isProduction(): boolean {
-  return (
-    typeof process !== 'undefined' &&
-    typeof process.env === 'object' &&
-    process.env !== null &&
-    process.env.NODE_ENV === 'production'
-  );
-}
-
-/**
  * Default handler when a Promise hangs without settling.
  * Prints a formatted warning to `console.warn` with caller location and stack trace.
  */
@@ -72,8 +59,10 @@ function traceInternal<T>(
     }
   }, timeoutMs);
 
-  // Unref timer in Node.js so it does not keep the event loop alive
-  (timer as any)?.unref?.();
+  // Unref timer in Node.js so it does not keep the event loop alive on its own
+  if (options?.unref !== false) {
+    (timer as { unref?: () => void })?.unref?.();
+  }
 
   // Clear the timer immediately when the promise settles (resolved or rejected)
   const cleanup = () => {
@@ -112,11 +101,9 @@ function traceInternal<T>(
  * @returns The monitored Promise.
  */
 export function trace<T>(promise: Promise<T>, options?: HangOptions): Promise<T> {
-  const isProd = isProduction();
-  const shouldBypass = options?.disabled || (isProd && !options?.force);
-  if (shouldBypass) {
-    return promise;
-  }
+  const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
+  const shouldBypass = options?.disabled || (isProduction && !options?.force);
+  if (shouldBypass) return promise;
   return traceInternal(promise, options, trace);
 }
 
@@ -135,11 +122,9 @@ export function wrapAsync<Args extends unknown[], Return>(
   fn: (...args: Args) => Promise<Return>,
   options?: HangOptions
 ): (...args: Args) => Promise<Return> {
-  const isProd = isProduction();
-  const shouldBypass = options?.disabled || (isProd && !options?.force);
-  if (shouldBypass) {
-    return fn;
-  }
+  const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
+  const shouldBypass = options?.disabled || (isProduction && !options?.force);
+  if (shouldBypass) return fn;
 
   const defaultLabel = options?.label || fn.name || '<anonymous>';
   const mergedOptions: HangOptions = {
@@ -148,7 +133,7 @@ export function wrapAsync<Args extends unknown[], Return>(
   };
 
   return function hangTraceWrapper(this: unknown, ...args: Args): Promise<Return> {
-    const isProdCall = isProduction();
+    const isProdCall = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
     const shouldBypassCall = mergedOptions.disabled || (isProdCall && !mergedOptions.force);
     if (shouldBypassCall) {
       return fn.apply(this, args);

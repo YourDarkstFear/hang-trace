@@ -128,7 +128,8 @@ const processOrder = wrapAsync(submitOrder, { label: 'SubmitOrder' });
 | `label` | `string` | `<anonymous>` or function name | Identifier displayed in logs and alerts. |
 | `onHang` | `(info: HangInfo) => void` | `undefined` | Custom alert callback. When provided, replaces `console.warn`. |
 | `disabled` | `boolean` | `false` | When `true`, completely disables tracking and returns the input directly. |
-| `force` | `boolean` | `false` | When `true`, overrides `NODE_ENV === 'production'` and forces diagnostics to run. |
+| `force` | `boolean` | `false` | When `true`, overrides `process.env.NODE_ENV === 'production'` and forces diagnostics to run. |
+| `unref` | `boolean` | `true` | In Node.js, calls `timer.unref()` so diagnostic timers don't keep the event loop alive. Set to `false` for short-lived scripts. |
 
 ---
 

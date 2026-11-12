@@ -430,4 +430,57 @@ describe('hang-trace', () => {
       expect(warnSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('10. Event loop unref option', () => {
+    it('calls timer.unref() by default (undefined)', () => {
+      const originalSetTimeout = globalThis.setTimeout;
+      const unrefSpy = vi.fn();
+      vi.spyOn(globalThis, 'setTimeout').mockImplementation((...args: any[]) => {
+        const timer = (originalSetTimeout as any)(...args);
+        if (timer && typeof timer === 'object') {
+          timer.unref = unrefSpy;
+        }
+        return timer;
+      });
+
+      const hangingPromise = new Promise(() => {});
+      trace(hangingPromise, { timeoutMs: 1000 });
+
+      expect(unrefSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls timer.unref() when unref: true', () => {
+      const originalSetTimeout = globalThis.setTimeout;
+      const unrefSpy = vi.fn();
+      vi.spyOn(globalThis, 'setTimeout').mockImplementation((...args: any[]) => {
+        const timer = (originalSetTimeout as any)(...args);
+        if (timer && typeof timer === 'object') {
+          timer.unref = unrefSpy;
+        }
+        return timer;
+      });
+
+      const hangingPromise = new Promise(() => {});
+      trace(hangingPromise, { timeoutMs: 1000, unref: true });
+
+      expect(unrefSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('skips calling timer.unref() when unref: false', () => {
+      const originalSetTimeout = globalThis.setTimeout;
+      const unrefSpy = vi.fn();
+      vi.spyOn(globalThis, 'setTimeout').mockImplementation((...args: any[]) => {
+        const timer = (originalSetTimeout as any)(...args);
+        if (timer && typeof timer === 'object') {
+          timer.unref = unrefSpy;
+        }
+        return timer;
+      });
+
+      const hangingPromise = new Promise(() => {});
+      trace(hangingPromise, { timeoutMs: 1000, unref: false });
+
+      expect(unrefSpy).not.toHaveBeenCalled();
+    });
+  });
 });
